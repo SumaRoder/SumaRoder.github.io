@@ -1,0 +1,1 @@
+import{_ as i,c as a,o as n,ae as l}from"./chunks/framework.Cd-3tpCq.js";const E=JSON.parse('{"title":"雪月插件教程","description":"","frontmatter":{},"headers":[],"relativePath":"doc.md","filePath":"doc.md"}'),t={name:"doc.md"};function p(e,s,h,k,d,r){return n(),a("div",null,s[0]||(s[0]=[l("",21)]))}const g=i(t,[["render",p]]);export{E as __pageData,g as default};
