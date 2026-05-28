@@ -1,0 +1,87 @@
+---
+import PageShell from '@/layouts/PageShell.astro'
+import SectionKicker from '@/components/SectionKicker.astro'
+import PostCard from '@/components/PostCard.astro'
+import { SITE } from '@/consts'
+import { getPublishedPosts, getAllCategories } from '@/lib/posts'
+
+const posts = await getPublishedPosts()
+const categories = getAllCategories(posts)
+const allLabel = SITE.pages.posts.allLabel
+---
+<PageShell title={`${SITE.pages.posts.title} · ${SITE.brand.name}`}>
+  <main class="page-main">
+    <section class="page-hero">
+      <SectionKicker index="A-01" label={SITE.pages.posts.kicker} />
+      <h1>{SITE.pages.posts.title}</h1>
+      <p>{SITE.pages.posts.lead}</p>
+    </section>
+
+    <section class="filter-panel">
+      <input
+        type="search"
+        placeholder={SITE.pages.posts.searchPlaceholder}
+        aria-label={SITE.pages.posts.searchPlaceholder}
+        data-search
+      />
+      <div class="filter-tabs" data-filters>
+        <button class="active" data-filter={allLabel}>{allLabel}</button>
+        {categories.map((c) => <button data-filter={c}>{c}</button>)}
+      </div>
+    </section>
+
+    <section class="list-section" data-list>
+      {posts.map((post, index) => (
+        <div
+          class="post-item"
+          data-category={post.data.category}
+          data-keywords={[post.data.title, post.data.excerpt, post.data.category, ...post.data.tags].join(' ').toLowerCase()}
+        >
+          <PostCard post={post} index={index} />
+        </div>
+      ))}
+      <p class="empty-state" data-empty hidden>没有找到匹配的文章。</p>
+    </section>
+  </main>
+</PageShell>
+
+<script is:inline define:vars={{ allLabel }}>
+  const search = document.querySelector('[data-search]')
+  const filters = document.querySelector('[data-filters]')
+  const list = document.querySelector('[data-list]')
+  const empty = document.querySelector('[data-empty]')
+  if (!search || !filters || !list || !empty) {
+    // bail
+  } else {
+    let category = allLabel
+    let query = ''
+    const items = Array.from(list.querySelectorAll('.post-item'))
+
+    function apply() {
+      let visible = 0
+      const k = query.trim().toLowerCase()
+      items.forEach((item) => {
+        const matchCategory = category === allLabel || item.dataset.category === category
+        const matchQuery = !k || (item.dataset.keywords || '').includes(k)
+        const ok = matchCategory && matchQuery
+        item.hidden = !ok
+        if (ok) visible++
+      })
+      empty.hidden = visible !== 0
+    }
+
+    search.addEventListener('input', (e) => {
+      query = e.target.value
+      apply()
+    })
+
+    filters.querySelectorAll('button').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        filters.querySelectorAll('button').forEach((b) => b.classList.remove('active'))
+        btn.classList.add('active')
+        category = btn.dataset.filter
+        apply()
+      })
+    })
+  }
+</script>

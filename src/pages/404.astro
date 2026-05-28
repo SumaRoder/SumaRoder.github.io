@@ -1,0 +1,12 @@
+---
+import PageShell from '@/layouts/PageShell.astro'
+import { SITE } from '@/consts'
+import { url } from '@/lib/url'
+---
+<PageShell title={`404 · ${SITE.brand.name}`}>
+  <main class="not-found">
+    <h1>404</h1>
+    <p>这页没有被收录。</p>
+    <a href={url('/')} class="ghost-action">BACK</a>
+  </main>
+</PageShell>

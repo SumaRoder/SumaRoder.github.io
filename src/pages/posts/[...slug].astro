@@ -1,0 +1,128 @@
+---
+import PageShell from '@/layouts/PageShell.astro'
+import SectionKicker from '@/components/SectionKicker.astro'
+import { SITE } from '@/consts'
+import { getPublishedPosts, type Post } from '@/lib/posts'
+import { url } from '@/lib/url'
+import { render } from 'astro:content'
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts()
+  return posts.map((post, index) => ({
+    params: { slug: post.id },
+    props: {
+      post,
+      index,
+      previous: index > 0 ? posts[index - 1] : undefined,
+      next: index < posts.length - 1 ? posts[index + 1] : undefined,
+    },
+  }))
+}
+
+interface Props {
+  post: Post
+  index: number
+  previous?: Post
+  next?: Post
+}
+
+const { post, index, previous, next } = Astro.props
+const data = post.data
+const { Content } = await render(post)
+---
+<PageShell title={`${data.title} · ${SITE.brand.name}`} description={data.excerpt}>
+  <main>
+    <section class="detail-hero">
+      <div class="detail-cover">
+        {data.cover && <img src={url(data.cover)} alt="" />}
+      </div>
+      <div class="detail-copy">
+        <SectionKicker index={String(index + 1).padStart(2, '0')} label={data.subtitle} />
+        <h1>{data.title}</h1>
+        <p>{data.excerpt}</p>
+        <div class="detail-meta">
+          <span>{data.category}</span>
+          <span>{data.date}</span>
+          {data.readingTime && <span>{data.readingTime}</span>}
+        </div>
+      </div>
+    </section>
+
+    <section class="article-shell">
+      <aside class="article-aside">
+        <strong>TAG TRACE</strong>
+        {data.tags.map((tag) => (
+          <a href={url(`/tags/${encodeURIComponent(tag)}`)}>#{tag}</a>
+        ))}
+      </aside>
+      <article class="article-body">
+        <Content />
+      </article>
+    </section>
+
+    <section class="article-license" aria-label="License statement">
+      <p>
+        {SITE.license.intro}
+        <a href={SITE.license.url} target="_blank" rel="noreferrer">{SITE.license.label}</a>
+        许可协议。
+      </p>
+    </section>
+
+    <nav class="article-nav" aria-label="Post navigation">
+      {previous ? (
+        <a href={url(`/posts/${previous.id}`)}>
+          <span>上一篇</span>
+          <strong>{previous.data.title}</strong>
+        </a>
+      ) : <span />}
+      {next ? (
+        <a href={url(`/posts/${next.id}`)}>
+          <span>下一篇</span>
+          <strong>{next.data.title}</strong>
+        </a>
+      ) : <span />}
+    </nav>
+  </main>
+</PageShell>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.article-body .spoiler').forEach((el) => {
+    const reveal = () => el.classList.add('revealed')
+    el.addEventListener('click', reveal)
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        reveal()
+      }
+    })
+  })
+
+  const cache = new Map<string, any>()
+  document.querySelectorAll<HTMLAnchorElement>('.article-body .github-card').forEach(async (card) => {
+    const repo = card.dataset.githubCard
+    if (!repo) return
+    card.innerHTML = `
+      <div class="github-card-body">
+        <span class="github-card-repo">${repo}</span>
+        <span class="github-card-desc">Loading repository information...</span>
+      </div>
+      <div class="github-card-stats"></div>
+    `
+    try {
+      let data = cache.get(repo)
+      if (!data) {
+        const res = await fetch(`https://api.github.com/repos/${repo}`)
+        if (!res.ok) throw new Error(String(res.status))
+        data = await res.json()
+        cache.set(repo, data)
+      }
+      const desc = card.querySelector('.github-card-desc')
+      const stats = card.querySelector('.github-card-stats')
+      if (desc) desc.textContent = data.description ?? ''
+      if (stats) stats.innerHTML = `<span>★ ${data.stargazers_count ?? 0}</span><span>⑂ ${data.forks_count ?? 0}</span>`
+    } catch {
+      const desc = card.querySelector('.github-card-desc')
+      if (desc) desc.textContent = 'Open on GitHub →'
+    }
+  })
+</script>

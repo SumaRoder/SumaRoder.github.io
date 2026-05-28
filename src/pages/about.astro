@@ -1,0 +1,23 @@
+---
+import PageShell from '@/layouts/PageShell.astro'
+import SectionKicker from '@/components/SectionKicker.astro'
+import { SITE } from '@/consts'
+---
+<PageShell title={`${SITE.pages.about.title} · ${SITE.brand.name}`}>
+  <main class="page-main">
+    <section class="page-hero">
+      <SectionKicker index="A-04" label={SITE.pages.about.kicker} />
+      <h1>{SITE.pages.about.title}</h1>
+      <p>{SITE.pages.about.lead}</p>
+    </section>
+
+    <section class="about-grid">
+      {SITE.pages.about.blocks.map((block) => (
+        <div class="about-block">
+          <strong>{block.title}</strong>
+          <p>{block.body}</p>
+        </div>
+      ))}
+    </section>
+  </main>
+</PageShell>

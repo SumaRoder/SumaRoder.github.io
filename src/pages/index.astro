@@ -1,0 +1,90 @@
+---
+import PageShell from '@/layouts/PageShell.astro'
+import SectionKicker from '@/components/SectionKicker.astro'
+import PostCard from '@/components/PostCard.astro'
+import { SITE } from '@/consts'
+import { getPublishedPosts, getAllTags, groupByMonth } from '@/lib/posts'
+import { url } from '@/lib/url'
+
+const posts = await getPublishedPosts()
+const featured = posts.slice(0, 3)
+const latest = posts.slice(0, 4)
+const tags = getAllTags(posts)
+const archive = groupByMonth(posts)
+---
+<PageShell>
+  <main>
+    <section class="hero-panel">
+      <div class="hero-copy">
+        <p class="eyebrow">{SITE.hero.eyebrow}</p>
+        <h1>{SITE.hero.titleLines.map((line, i) => (
+          <>
+            {line}{i < SITE.hero.titleLines.length - 1 && <br />}
+          </>
+        ))}</h1>
+        <p class="hero-lead">{SITE.hero.lead}</p>
+        <div class="hero-actions">
+          <a href={url(SITE.hero.primaryCta.href)} class="primary-action">{SITE.hero.primaryCta.label}</a>
+          <a href={url(SITE.hero.secondaryCta.href)} class="ghost-action">{SITE.hero.secondaryCta.label}</a>
+        </div>
+      </div>
+      <div class="hero-console" aria-label="Featured articles">
+        <div class="console-bar">
+          <span>{SITE.hero.consoleLabel}</span>
+          <span>ACTIVE</span>
+        </div>
+        {featured.map((post, index) => (
+          <a href={url(`/posts/${post.id}`)} class="console-row">
+            <span>{String(index + 1).padStart(2, '0')}</span>
+            <strong>{post.data.title}</strong>
+            <i>{post.data.category}</i>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="black-band">
+      <SectionKicker index="01" label={SITE.sections.latest.kicker} />
+      <div class="band-heading">
+        <h2>{SITE.sections.latest.title}</h2>
+        <p>{SITE.sections.latest.lead}</p>
+      </div>
+      <div class="post-grid">
+        {latest.map((post, index) => <PostCard post={post} index={index} />)}
+      </div>
+    </section>
+
+    <section class="white-band split-band">
+      <div>
+        <SectionKicker index="02" label={SITE.sections.tags.kicker} />
+        <h2 class="massive-title">{SITE.sections.tags.title}</h2>
+        <div class="tag-cloud">
+          {tags.map((tag) => (
+            <a href={url(`/tags/${encodeURIComponent(tag)}`)}>{tag}</a>
+          ))}
+        </div>
+      </div>
+      <div>
+        <SectionKicker index="03" label={SITE.sections.archive.kicker} />
+        <h2 class="massive-title">{SITE.sections.archive.title}</h2>
+        <div class="archive-preview">
+          {archive.map(([month, items]) => (
+            <a href={url('/archive')} class="archive-chip">
+              <span>{month}</span>
+              <strong>{items.length}</strong>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="about-strip">
+      <div>
+        <p class="eyebrow">{SITE.sections.aboutStrip.eyebrow}</p>
+        <h2>{SITE.sections.aboutStrip.title}</h2>
+      </div>
+      <p>{SITE.sections.aboutStrip.lead}</p>
+      <a href={url('/about')} class="ghost-action">{SITE.sections.aboutStrip.ctaLabel}</a>
+    </section>
+  </main>
+</PageShell>

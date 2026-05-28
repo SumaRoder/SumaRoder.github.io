@@ -1,0 +1,39 @@
+---
+import PageShell from '@/layouts/PageShell.astro'
+import SectionKicker from '@/components/SectionKicker.astro'
+import { SITE } from '@/consts'
+import { getPublishedPosts, groupByMonth } from '@/lib/posts'
+import { url } from '@/lib/url'
+
+const posts = await getPublishedPosts()
+const groups = groupByMonth(posts)
+---
+<PageShell title={`${SITE.pages.archive.title} · ${SITE.brand.name}`}>
+  <main class="page-main">
+    <section class="page-hero">
+      <SectionKicker index="A-03" label={SITE.pages.archive.kicker} />
+      <h1>{SITE.pages.archive.title}</h1>
+      <p>{SITE.pages.archive.lead}</p>
+    </section>
+
+    <section class="timeline">
+      {groups.map(([month, items]) => (
+        <div class="timeline-group">
+          <div class="timeline-month">
+            <strong>{month}</strong>
+            <span>{items.length} POSTS</span>
+          </div>
+          <div class="timeline-posts">
+            {items.map((post) => (
+              <a href={url(`/posts/${post.id}`)} class="timeline-item">
+                <span>{post.data.date.slice(8)}</span>
+                <strong>{post.data.title}</strong>
+                <i>{post.data.category}</i>
+              </a>
+            ))}
+          </div>
+        </div>
+      ))}
+    </section>
+  </main>
+</PageShell>

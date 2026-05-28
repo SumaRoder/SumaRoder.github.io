@@ -1,0 +1,102 @@
+---
+import { SITE } from '@/consts'
+import { url } from '@/lib/url'
+
+const currentPath = Astro.url.pathname
+const baseStrip = import.meta.env.BASE_URL.replace(/\/$/, '')
+function isActive(href: string) {
+  const target = (baseStrip + (href === '/' ? '/' : href)).replace(/\/$/, '') || '/'
+  const current = currentPath.replace(/\/$/, '') || '/'
+  if (href === '/') return current === target
+  return current === target || current.startsWith(target + '/')
+}
+---
+<header class="site-header">
+  <a href={url('/')} class="brand-mark" aria-label={`${SITE.brand.name} home`}>
+    <span class="brand-cn">{SITE.brand.name}</span>
+    <span class="brand-en">{SITE.brand.sub}</span>
+  </a>
+  <div class="header-actions">
+    <button class="header-icon signal-button" type="button" aria-label="Reading signal">
+      <span></span>
+    </button>
+    <button
+      class="header-icon menu-toggle"
+      type="button"
+      aria-label="Open navigation"
+      aria-expanded="false"
+      aria-controls="site-menu"
+      data-menu-toggle
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</header>
+
+<button
+  class="menu-scrim"
+  type="button"
+  aria-label="Close navigation"
+  tabindex="-1"
+  data-menu-scrim
+></button>
+
+<aside id="site-menu" class="site-menu" aria-hidden="true" data-menu-panel>
+  <div class="menu-rail" aria-hidden="true">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+  <div class="menu-panel-mark">
+    <span>{SITE.brand.name}</span>
+    <strong>NAVIGATION</strong>
+  </div>
+  <nav class="site-nav" aria-label="Primary navigation">
+    {SITE.nav.map((item, index) => (
+      <a
+        href={url(item.href)}
+        class={isActive(item.href) ? 'active' : undefined}
+        style={`--item-delay: ${index * 70}ms`}
+      >
+        <span>{String(index + 1).padStart(2, '0')}</span>
+        <strong>{item.label}</strong>
+      </a>
+    ))}
+  </nav>
+</aside>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]')
+  const scrim = document.querySelector<HTMLButtonElement>('[data-menu-scrim]')
+  const panel = document.querySelector<HTMLElement>('[data-menu-panel]')
+
+  if (toggle && scrim && panel) {
+    let prevOverflow = ''
+    const setOpen = (open: boolean) => {
+      toggle.classList.toggle('open', open)
+      toggle.setAttribute('aria-expanded', String(open))
+      toggle.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation')
+      scrim.classList.toggle('open', open)
+      scrim.tabIndex = open ? 0 : -1
+      panel.classList.toggle('open', open)
+      panel.setAttribute('aria-hidden', String(!open))
+      if (open) {
+        prevOverflow = document.body.style.overflow
+        document.body.style.overflow = 'hidden'
+      } else {
+        document.body.style.overflow = prevOverflow
+      }
+    }
+
+    toggle.addEventListener('click', () => {
+      setOpen(!toggle.classList.contains('open'))
+    })
+    scrim.addEventListener('click', () => setOpen(false))
+    panel.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)))
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') setOpen(false)
+    })
+  }
+</script>

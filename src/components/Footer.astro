@@ -1,0 +1,35 @@
+---
+import { SITE } from '@/consts'
+const repeat = 12
+---
+<footer class="site-footer">
+  <div class="footer-mark">
+    <span>{SITE.footer.mark}</span>
+    <strong>{SITE.footer.submark}</strong>
+  </div>
+  <div class="footer-links">
+    {SITE.footer.items.map((item) => <span>{item}</span>)}
+  </div>
+</footer>
+
+<div class="footer-marquee-bg" aria-hidden="true">
+  <div class="marquee-track">
+    {Array.from({ length: repeat }).map(() => (
+      <span class="marquee-spacer">{SITE.footer.marqueeText}</span>
+    ))}
+  </div>
+</div>
+
+<style>
+  .footer-marquee-bg .marquee-track {
+    display: flex;
+    flex-shrink: 0;
+    animation: marqueeScroll 32s linear infinite;
+    will-change: transform;
+  }
+
+  @keyframes marqueeScroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+</style>

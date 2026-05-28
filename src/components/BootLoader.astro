@@ -1,0 +1,41 @@
+---
+import { SITE } from '@/consts'
+const boot = SITE.bootLoader
+---
+{boot.enabled && (
+  <div class="boot-loader" role="status" aria-label="Loading site" data-boot>
+    <div class="boot-loader-inner">
+      <div class="boot-brand">
+        <span>{boot.brandFront}</span>
+        <strong>{boot.brandBack}</strong>
+      </div>
+      <div class="boot-readout">
+        <span>[ REC ]</span>
+        <i></i>
+        <span>{boot.readout}</span>
+      </div>
+      <div class="boot-progress" aria-hidden="true">
+        <span></span>
+      </div>
+    </div>
+    <div class="boot-figure boot-figure-a" aria-hidden="true"></div>
+    <div class="boot-figure boot-figure-b" aria-hidden="true"></div>
+    <div class="boot-corner boot-corner-left" aria-hidden="true">{boot.cornerLeft}</div>
+    <div class="boot-corner boot-corner-right" aria-hidden="true">{boot.cornerRight}</div>
+  </div>
+)}
+
+<script>
+  const el = document.querySelector<HTMLElement>('[data-boot]')
+  if (el) {
+    if (sessionStorage.getItem('sumaidx-booted')) {
+      el.remove()
+    } else {
+      window.setTimeout(() => el.classList.add('leaving'), 1850)
+      window.setTimeout(() => {
+        sessionStorage.setItem('sumaidx-booted', 'true')
+        el.remove()
+      }, 2550)
+    }
+  }
+</script>

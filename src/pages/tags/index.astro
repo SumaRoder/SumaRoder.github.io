@@ -1,0 +1,31 @@
+---
+import PageShell from '@/layouts/PageShell.astro'
+import SectionKicker from '@/components/SectionKicker.astro'
+import { SITE } from '@/consts'
+import { getPublishedPosts, getAllTags } from '@/lib/posts'
+import { url } from '@/lib/url'
+
+const posts = await getPublishedPosts()
+const tags = getAllTags(posts)
+---
+<PageShell title={`${SITE.pages.tags.title} · ${SITE.brand.name}`}>
+  <main class="page-main">
+    <section class="page-hero">
+      <SectionKicker index="A-02" label={SITE.pages.tags.kicker} />
+      <h1>{SITE.pages.tags.title}</h1>
+      <p>{SITE.pages.tags.lead}</p>
+    </section>
+
+    <section class="tag-index">
+      {tags.map((tag) => {
+        const count = posts.filter((p) => p.data.tags.includes(tag)).length
+        return (
+          <a href={url(`/tags/${encodeURIComponent(tag)}`)} class="tag-index-card">
+            <strong>#{tag}</strong>
+            <span>{count} 篇</span>
+          </a>
+        )
+      })}
+    </section>
+  </main>
+</PageShell>
