@@ -62,6 +62,21 @@ export interface SiteConfig {
     intro: string
     sourceLabel: string
   }
+  comments: {
+    enabled: boolean
+    repo: `${string}/${string}`
+    repoId: string
+    category: string
+    categoryId: string
+    mapping: 'pathname' | 'url' | 'title' | 'og:title' | 'specific' | 'number'
+    strict: '0' | '1'
+    reactionsEnabled: '0' | '1'
+    emitMetadata: '0' | '1'
+    inputPosition: 'top' | 'bottom'
+    theme: string
+    lang: string
+    loading: 'lazy' | 'eager'
+  }
 }
 
 export const SITE: SiteConfig = {
@@ -147,5 +162,20 @@ export const SITE: SiteConfig = {
     url: 'https://creativecommons.org/licenses/by-nc-sa/3.0/cn/',
     intro: '本文采用',
     sourceLabel: '获取源代码',
+  },
+  comments: {
+    enabled: true,
+    repo: 'SumaRoder/SumaRoder.github.io',
+    repoId: 'R_kgDOQ8NlNQ',
+    category: 'Announcements',
+    categoryId: 'DIC_kwDOQ8NlNc4C-D2C',
+    mapping: 'pathname',
+    strict: '0',
+    reactionsEnabled: '1',
+    emitMetadata: '0',
+    inputPosition: 'bottom',
+    theme: 'preferred_color_scheme',
+    lang: 'zh-CN',
+    loading: 'lazy',
   },
 }

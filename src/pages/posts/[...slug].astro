@@ -1,6 +1,7 @@
 ---
 import PageShell from '@/layouts/PageShell.astro'
 import SectionKicker from '@/components/SectionKicker.astro'
+import Comments from '@/components/Comments.astro'
 import { SITE } from '@/consts'
 import { getPublishedPosts, type Post } from '@/lib/posts'
 import { url } from '@/lib/url'
@@ -82,6 +83,8 @@ const { Content } = await render(post)
         </a>
       ) : <span />}
     </nav>
+
+    <Comments />
   </main>
 </PageShell>
 

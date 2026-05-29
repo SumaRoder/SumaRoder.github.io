@@ -1,0 +1,32 @@
+---
+import { SITE } from '@/consts'
+
+const c = SITE.comments
+---
+{c.enabled && (
+  <section class="article-comments" aria-label="Comments">
+    <div class="article-comments-header">
+      <strong>COMMENTS</strong>
+      <span>由 giscus + GitHub Discussions 驱动</span>
+    </div>
+    <div class="article-comments-frame">
+      <script
+        src="https://giscus.app/client.js"
+        data-repo={c.repo}
+        data-repo-id={c.repoId}
+        data-category={c.category}
+        data-category-id={c.categoryId}
+        data-mapping={c.mapping}
+        data-strict={c.strict}
+        data-reactions-enabled={c.reactionsEnabled}
+        data-emit-metadata={c.emitMetadata}
+        data-input-position={c.inputPosition}
+        data-theme={c.theme}
+        data-lang={c.lang}
+        data-loading={c.loading}
+        crossorigin="anonymous"
+        async
+      />
+    </div>
+  </section>
+)}
