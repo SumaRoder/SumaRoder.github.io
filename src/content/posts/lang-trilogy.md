@@ -26,7 +26,9 @@ tags: ["Suma-lang", "编译器", "解释器", "造语言", "杂谈"]
 
 ~~（事实上也只是拉了托大的罢了。）~~
 
-技术栈是 **Java 21 + Maven**。附上源码<del>（史）</del>：[第一版解释器](https://github.com/SumaRoder/Tracklock)
+技术栈是 **Java 21 + Maven**。附上源码<del>（史）</del>：
+
+::github{repo="SumaRoder/Tracklock"}
 
 如果你点进去，请做好心理准备——史归史，但毕竟是我亲手拉的第一坨。
 
@@ -42,6 +44,8 @@ tags: ["Suma-lang", "编译器", "解释器", "造语言", "杂谈"]
 不久前，我**染上了**对 ML 语言家族和函数式编程的喜爱。
 
 因此我现在正在维护的这一版 [Suma-lang](https://github.com/SumaRoder/Suma-lang) 受到了很多影响，比如：
+
+::github{repo="SumaRoder/Suma-lang"}
 
 - **类型推断**
 - **类型后置**
