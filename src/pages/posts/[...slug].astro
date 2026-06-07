@@ -78,10 +78,12 @@ const jsonLd = {
       <span aria-current="page">{data.title}</span>
     </nav>
 
-    <section class="detail-hero">
-      <div class="detail-cover">
-        {data.cover && <img src={url(data.cover)} alt={data.title} />}
-      </div>
+    <section class={`detail-hero${data.cover ? '' : ' no-cover'}`}>
+      {data.cover && (
+        <div class="detail-cover">
+          <img src={url(data.cover)} alt={data.title} />
+        </div>
+      )}
       <div class="detail-copy">
         <SectionKicker index={String(index + 1).padStart(2, '0')} label={data.subtitle} />
         <h1>{data.title}</h1>

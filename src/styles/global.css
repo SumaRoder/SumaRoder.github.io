@@ -1400,6 +1400,10 @@ body.menu-open .site-header {
   background: linear-gradient(180deg, var(--white) 0%, var(--bg) 100%);
 }
 
+.detail-hero.no-cover {
+  grid-template-columns: 1fr;
+}
+
 .detail-hero::after {
   content: "READ";
   position: absolute;
