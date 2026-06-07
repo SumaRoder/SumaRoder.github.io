@@ -26,16 +26,23 @@ const boot = SITE.bootLoader
 )}
 
 <script>
-  const el = document.querySelector<HTMLElement>('[data-boot]')
-  if (el) {
+  function handleBoot() {
+    const el = document.querySelector<HTMLElement>('[data-boot]')
+    if (!el || el.dataset.bootHandled === '1') return
+    el.dataset.bootHandled = '1'
+
     if (sessionStorage.getItem('sumaidx-booted')) {
       el.remove()
-    } else {
-      window.setTimeout(() => el.classList.add('leaving'), 1850)
-      window.setTimeout(() => {
-        sessionStorage.setItem('sumaidx-booted', 'true')
-        el.remove()
-      }, 2550)
+      return
     }
+
+    window.setTimeout(() => el.classList.add('leaving'), 1850)
+    window.setTimeout(() => {
+      sessionStorage.setItem('sumaidx-booted', 'true')
+      el.remove()
+    }, 2550)
   }
+
+  handleBoot()
+  document.addEventListener('astro:page-load', handleBoot)
 </script>
