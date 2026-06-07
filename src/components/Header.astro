@@ -127,6 +127,7 @@ function isActive(href: string) {
       const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'
       document.documentElement.dataset.theme = next
       try { localStorage.setItem('theme', next) } catch {}
+      document.dispatchEvent(new CustomEvent('theme-change', { detail: { theme: next } }))
     })
   }
 

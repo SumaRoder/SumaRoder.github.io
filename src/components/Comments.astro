@@ -9,24 +9,71 @@ const c = SITE.comments
       <strong>COMMENTS</strong>
       <span>由 giscus + GitHub Discussions 驱动</span>
     </div>
-    <div class="article-comments-frame">
-      <script
-        src="https://giscus.app/client.js"
-        data-repo={c.repo}
-        data-repo-id={c.repoId}
-        data-category={c.category}
-        data-category-id={c.categoryId}
-        data-mapping={c.mapping}
-        data-strict={c.strict}
-        data-reactions-enabled={c.reactionsEnabled}
-        data-emit-metadata={c.emitMetadata}
-        data-input-position={c.inputPosition}
-        data-theme={c.theme}
-        data-lang={c.lang}
-        data-loading={c.loading}
-        crossorigin="anonymous"
-        async
-      />
-    </div>
+    <div
+      class="article-comments-frame"
+      data-giscus-mount
+      data-repo={c.repo}
+      data-repo-id={c.repoId}
+      data-category={c.category}
+      data-category-id={c.categoryId}
+      data-mapping={c.mapping}
+      data-strict={c.strict}
+      data-reactions-enabled={c.reactionsEnabled}
+      data-emit-metadata={c.emitMetadata}
+      data-input-position={c.inputPosition}
+      data-lang={c.lang}
+      data-loading={c.loading}
+    ></div>
   </section>
 )}
+
+<script>
+  function giscusTheme() {
+    return document.documentElement.dataset.theme === 'dark' ? 'dark_dimmed' : 'light'
+  }
+
+  function loadGiscus() {
+    const mount = document.querySelector<HTMLElement>('[data-giscus-mount]')
+    if (!mount || mount.dataset.giscusLoaded === '1') return
+    mount.dataset.giscusLoaded = '1'
+
+    const s = document.createElement('script')
+    s.src = 'https://giscus.app/client.js'
+    const passthrough: Array<[string, string | undefined]> = [
+      ['repo', mount.dataset.repo],
+      ['repo-id', mount.dataset.repoId],
+      ['category', mount.dataset.category],
+      ['category-id', mount.dataset.categoryId],
+      ['mapping', mount.dataset.mapping],
+      ['strict', mount.dataset.strict],
+      ['reactions-enabled', mount.dataset.reactionsEnabled],
+      ['emit-metadata', mount.dataset.emitMetadata],
+      ['input-position', mount.dataset.inputPosition],
+      ['lang', mount.dataset.lang],
+      ['loading', mount.dataset.loading],
+    ]
+    passthrough.forEach(([k, v]) => {
+      if (v != null) s.setAttribute(`data-${k}`, v)
+    })
+    s.setAttribute('data-theme', giscusTheme())
+    s.crossOrigin = 'anonymous'
+    s.async = true
+    mount.appendChild(s)
+  }
+
+  function syncGiscusTheme() {
+    const iframe = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame')
+    if (!iframe?.contentWindow) return
+    iframe.contentWindow.postMessage(
+      { giscus: { setConfig: { theme: giscusTheme() } } },
+      'https://giscus.app',
+    )
+  }
+
+  loadGiscus()
+  document.addEventListener('astro:page-load', () => {
+    loadGiscus()
+    syncGiscusTheme()
+  })
+  document.addEventListener('theme-change', syncGiscusTheme)
+</script>
