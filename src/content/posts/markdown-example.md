@@ -7,7 +7,6 @@ excerpt: "A simple example of a Markdown blog post."
 cover: "/assets/operators/mifu.png"
 accent: "#fffa00"
 tags: ["Markdown", "Demo", "Example"]
-readingTime: "1 MIN"
 ---
 
 # An h1 header

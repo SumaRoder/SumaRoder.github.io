@@ -1,9 +1,10 @@
 ---
 import PageShell from '@/layouts/PageShell.astro'
 import SectionKicker from '@/components/SectionKicker.astro'
+import PostCard from '@/components/PostCard.astro'
 import Comments from '@/components/Comments.astro'
 import { SITE } from '@/consts'
-import { getPublishedPosts, type Post } from '@/lib/posts'
+import { getPublishedPosts, postReadingTime, findRelatedPosts, type Post } from '@/lib/posts'
 import { url } from '@/lib/url'
 import { render } from 'astro:content'
 
@@ -16,6 +17,7 @@ export async function getStaticPaths() {
       index,
       previous: index > 0 ? posts[index - 1] : undefined,
       next: index < posts.length - 1 ? posts[index + 1] : undefined,
+      related: findRelatedPosts(post, posts),
     },
   }))
 }
@@ -25,17 +27,60 @@ interface Props {
   index: number
   previous?: Post
   next?: Post
+  related: Post[]
 }
 
-const { post, index, previous, next } = Astro.props
+const { post, index, previous, next, related } = Astro.props
 const data = post.data
 const { Content } = await render(post)
+const reading = postReadingTime(post)
+
+const siteOrigin = Astro.site ?? new URL('https://example.com')
+const canonical = new URL(Astro.url.pathname, siteOrigin).href
+const ogImageUrl = data.cover
+  ? new URL(url(data.cover), siteOrigin).href
+  : undefined
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: data.title,
+  description: data.excerpt,
+  datePublished: data.date,
+  inLanguage: SITE.lang,
+  mainEntityOfPage: canonical,
+  url: canonical,
+  keywords: data.tags.join(', '),
+  articleSection: data.category,
+  ...(ogImageUrl ? { image: ogImageUrl } : {}),
+  author: { '@type': 'Person', name: SITE.brand.name },
+  publisher: { '@type': 'Organization', name: SITE.brand.name },
+}
 ---
-<PageShell title={`${data.title} · ${SITE.brand.name}`} description={data.excerpt}>
+<PageShell
+  title={`${data.title} · ${SITE.brand.name}`}
+  description={data.excerpt}
+  image={data.cover}
+  type="article"
+  publishedTime={data.date}
+  tags={data.tags}
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
+  </Fragment>
+
   <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href={url('/')}>首页</a>
+      <span aria-hidden="true">/</span>
+      <a href={url('/posts')}>文章</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{data.title}</span>
+    </nav>
+
     <section class="detail-hero">
       <div class="detail-cover">
-        {data.cover && <img src={url(data.cover)} alt="" />}
+        {data.cover && <img src={url(data.cover)} alt={data.title} />}
       </div>
       <div class="detail-copy">
         <SectionKicker index={String(index + 1).padStart(2, '0')} label={data.subtitle} />
@@ -44,7 +89,7 @@ const { Content } = await render(post)
         <div class="detail-meta">
           <span>{data.category}</span>
           <span>{data.date}</span>
-          {data.readingTime && <span>{data.readingTime}</span>}
+          {reading && <span>{reading}</span>}
         </div>
       </div>
     </section>
@@ -69,6 +114,16 @@ const { Content } = await render(post)
       </p>
     </section>
 
+    {related.length > 0 && (
+      <section class="related-posts" aria-label="Related posts">
+        <SectionKicker index="REL" label="RELATED READING" />
+        <h2>相关文章</h2>
+        <div class="related-grid">
+          {related.map((p, i) => <PostCard post={p} index={i} compact />)}
+        </div>
+      </section>
+    )}
+
     <nav class="article-nav" aria-label="Post navigation">
       {previous ? (
         <a href={url(`/posts/${previous.id}`)}>
@@ -89,43 +144,6 @@ const { Content } = await render(post)
 </PageShell>
 
 <script>
-  document.querySelectorAll<HTMLElement>('.article-body .spoiler').forEach((el) => {
-    const reveal = () => el.classList.add('revealed')
-    el.addEventListener('click', reveal)
-    el.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault()
-        reveal()
-      }
-    })
-  })
-
-  const cache = new Map<string, any>()
-  document.querySelectorAll<HTMLAnchorElement>('.article-body .github-card').forEach(async (card) => {
-    const repo = card.dataset.githubCard
-    if (!repo) return
-    card.innerHTML = `
-      <div class="github-card-body">
-        <span class="github-card-repo">${repo}</span>
-        <span class="github-card-desc">Loading repository information...</span>
-      </div>
-      <div class="github-card-stats"></div>
-    `
-    try {
-      let data = cache.get(repo)
-      if (!data) {
-        const res = await fetch(`https://api.github.com/repos/${repo}`)
-        if (!res.ok) throw new Error(String(res.status))
-        data = await res.json()
-        cache.set(repo, data)
-      }
-      const desc = card.querySelector('.github-card-desc')
-      const stats = card.querySelector('.github-card-stats')
-      if (desc) desc.textContent = data.description ?? ''
-      if (stats) stats.innerHTML = `<span>★ ${data.stargazers_count ?? 0}</span><span>⑂ ${data.forks_count ?? 0}</span>`
-    } catch {
-      const desc = card.querySelector('.github-card-desc')
-      if (desc) desc.textContent = 'Open on GitHub →'
-    }
-  })
+  import { bootPostEnhancers } from '@/lib/scripts/post-enhancers'
+  bootPostEnhancers()
 </script>

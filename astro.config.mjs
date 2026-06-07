@@ -1,4 +1,5 @@
 import { defineConfig } from 'astro/config'
+import sitemap from '@astrojs/sitemap'
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 import remarkDirective from 'remark-directive'
@@ -14,6 +15,8 @@ import { remarkSpoiler } from './src/lib/remark/spoiler'
 export default defineConfig({
   site: process.env.ASTRO_SITE ?? 'https://example.com',
   base: process.env.ASTRO_BASE ?? '/',
+  trailingSlash: 'ignore',
+  integrations: [sitemap()],
   server: {
     host: '127.0.0.1',
     port: 5173,

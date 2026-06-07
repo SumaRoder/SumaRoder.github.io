@@ -37,7 +37,11 @@ jobs:
         run: |
           REPO="${GITHUB_REPOSITORY#*/}"
           OWNER="${GITHUB_REPOSITORY%%/*}"
-          if [ "$REPO" = "${OWNER}.github.io" ]; then
+          if [ -f CNAME ]; then
+            DOMAIN="$(tr -d '[:space:]' < CNAME)"
+            echo "base=/" >> "$GITHUB_OUTPUT"
+            echo "site=https://${DOMAIN}" >> "$GITHUB_OUTPUT"
+          elif [ "$REPO" = "${OWNER}.github.io" ]; then
             echo "base=/" >> "$GITHUB_OUTPUT"
             echo "site=https://${OWNER}.github.io" >> "$GITHUB_OUTPUT"
           else

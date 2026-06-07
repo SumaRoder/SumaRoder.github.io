@@ -1,5 +1,6 @@
 ---
 import type { Post } from '@/lib/posts'
+import { postReadingTime } from '@/lib/posts'
 import { url } from '@/lib/url'
 
 interface Props {
@@ -10,19 +11,20 @@ interface Props {
 
 const { post, index, compact = false } = Astro.props
 const data = post.data
+const reading = postReadingTime(post)
 ---
 <a href={url(`/posts/${post.id}`)} class={compact ? 'post-card compact' : 'post-card'}>
   <div class="post-card-index">{String(index + 1).padStart(2, '0')}</div>
   {!compact && (
     <div class="post-card-media">
-      {data.cover && <img src={url(data.cover)} alt="" loading="lazy" />}
+      {data.cover && <img src={url(data.cover)} alt={data.title} loading="lazy" />}
     </div>
   )}
   <div class="post-card-body">
     <div class="post-meta-line">
       <span>{data.category}</span>
       <span>{data.date}</span>
-      {data.readingTime && <span>{data.readingTime}</span>}
+      {reading && <span>{reading}</span>}
     </div>
     <h2>{data.title}</h2>
     <p>{data.excerpt}</p>

@@ -7,7 +7,6 @@ excerpt: "Read more about Markdown features in Iskar."
 cover: "/assets/operators/mifu.png"
 accent: "#fffa00"
 tags: ["Demo", "Markdown", "Example"]
-readingTime: "1 MIN"
 ---
 
 ## GitHub Repository Cards

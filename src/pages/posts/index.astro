@@ -45,43 +45,11 @@ const allLabel = SITE.pages.posts.allLabel
   </main>
 </PageShell>
 
-<script is:inline define:vars={{ allLabel }}>
-  const search = document.querySelector('[data-search]')
-  const filters = document.querySelector('[data-filters]')
-  const list = document.querySelector('[data-list]')
-  const empty = document.querySelector('[data-empty]')
-  if (!search || !filters || !list || !empty) {
-    // bail
-  } else {
-    let category = allLabel
-    let query = ''
-    const items = Array.from(list.querySelectorAll('.post-item'))
-
-    function apply() {
-      let visible = 0
-      const k = query.trim().toLowerCase()
-      items.forEach((item) => {
-        const matchCategory = category === allLabel || item.dataset.category === category
-        const matchQuery = !k || (item.dataset.keywords || '').includes(k)
-        const ok = matchCategory && matchQuery
-        item.hidden = !ok
-        if (ok) visible++
-      })
-      empty.hidden = visible !== 0
-    }
-
-    search.addEventListener('input', (e) => {
-      query = e.target.value
-      apply()
-    })
-
-    filters.querySelectorAll('button').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        filters.querySelectorAll('button').forEach((b) => b.classList.remove('active'))
-        btn.classList.add('active')
-        category = btn.dataset.filter
-        apply()
-      })
-    })
-  }
+<script>
+  import { initPostsFilter } from '@/lib/scripts/posts-filter'
+  import { SITE } from '@/consts'
+  const allLabel = SITE.pages.posts.allLabel
+  const run = () => initPostsFilter(allLabel)
+  run()
+  document.addEventListener('astro:page-load', run)
 </script>
