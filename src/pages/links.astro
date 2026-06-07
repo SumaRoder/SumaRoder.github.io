@@ -1,0 +1,41 @@
+---
+import PageShell from '@/layouts/PageShell.astro'
+import SectionKicker from '@/components/SectionKicker.astro'
+import { SITE } from '@/consts'
+
+const page = SITE.pages.links
+---
+<PageShell
+  title={`${page.title} · ${SITE.brand.name}`}
+  description={page.lead}
+>
+  <main class="page-main">
+    <section class="page-hero">
+      <SectionKicker index="A-05" label={page.kicker} />
+      <h1>{page.title}</h1>
+      <p>{page.lead}</p>
+    </section>
+
+    <section class="links-grid" aria-label="Friend sites">
+      {page.items.map((item, i) => (
+        <a class="link-card" href={item.url} target="_blank" rel="noopener noreferrer">
+          <div class="link-card-head">
+            <span class="link-card-index">{String(i + 1).padStart(2, '0')}</span>
+            {item.tag && <span class="link-card-tag">{item.tag}</span>}
+          </div>
+          <strong class="link-card-name">{item.name}</strong>
+          <span class="link-card-url">{item.url.replace(/^https?:\/\//, '')}</span>
+          <p class="link-card-desc">{item.description}</p>
+          <span class="link-card-arrow" aria-hidden="true">↗</span>
+        </a>
+      ))}
+    </section>
+
+    {page.note && (
+      <aside class="links-note">
+        <strong>NOTE</strong>
+        <p>{page.note}</p>
+      </aside>
+    )}
+  </main>
+</PageShell>

@@ -2,22 +2,58 @@
 import PageShell from '@/layouts/PageShell.astro'
 import SectionKicker from '@/components/SectionKicker.astro'
 import { SITE } from '@/consts'
+
+const page = SITE.pages.about
 ---
-<PageShell title={`${SITE.pages.about.title} · ${SITE.brand.name}`}>
+<PageShell
+  title={`${page.title} · ${SITE.brand.name}`}
+  description={page.lead}
+>
   <main class="page-main">
     <section class="page-hero">
-      <SectionKicker index="A-04" label={SITE.pages.about.kicker} />
-      <h1>{SITE.pages.about.title}</h1>
-      <p>{SITE.pages.about.lead}</p>
+      <SectionKicker index="A-04" label={page.kicker} />
+      <h1>{page.title}</h1>
+      <p>{page.lead}</p>
     </section>
 
-    <section class="about-grid">
-      {SITE.pages.about.blocks.map((block) => (
-        <div class="about-block">
-          <strong>{block.title}</strong>
-          <p>{block.body}</p>
+    <section class="bio-shell">
+      <aside class="bio-card" aria-label="Profile card">
+        <span class="bio-card-handle">{page.handle}</span>
+        <strong class="bio-card-name">{SITE.brand.name}</strong>
+        <p class="bio-card-tagline">{page.tagline}</p>
+        <dl class="bio-card-contacts">
+          {page.contacts.map((c) => (
+            <div class="bio-card-row">
+              <dt>{c.label}</dt>
+              <dd>
+                {c.href ? (
+                  <a href={c.href} target={c.href.startsWith('http') ? '_blank' : undefined} rel={c.href.startsWith('http') ? 'noopener noreferrer' : undefined}>{c.value}</a>
+                ) : (
+                  <span>{c.value}</span>
+                )}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </aside>
+
+      <div class="bio-body">
+        <p class="bio-intro">{page.intro}</p>
+
+        <div class="bio-sections">
+          {page.sections.map((s, i) => (
+            <article class="bio-section">
+              <header class="bio-section-head">
+                <span>{String(i + 1).padStart(2, '0')}</span>
+                <i></i>
+                <strong>{s.kicker}</strong>
+              </header>
+              <h2>{s.title}</h2>
+              <p>{s.body}</p>
+            </article>
+          ))}
         </div>
-      ))}
+      </div>
     </section>
   </main>
 </PageShell>

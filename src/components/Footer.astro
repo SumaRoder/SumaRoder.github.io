@@ -1,5 +1,6 @@
 ---
 import { SITE } from '@/consts'
+import { url } from '@/lib/url'
 const repeat = 12
 ---
 <footer class="site-footer">
@@ -7,8 +8,23 @@ const repeat = 12
     <span>{SITE.footer.mark}</span>
     <strong>{SITE.footer.submark}</strong>
   </div>
-  <div class="footer-links">
-    {SITE.footer.items.map((item) => <span>{item}</span>)}
+  <div class="footer-cluster">
+    <nav class="footer-nav" aria-label="Footer navigation">
+      {SITE.footer.nav.map((item) => (
+        <a href={url(item.href)}>{item.label}</a>
+      ))}
+    </nav>
+    <div class="footer-meta">
+      {SITE.footer.items.map((item) => <span>{item}</span>)}
+      {SITE.footer.icp && (
+        <a
+          class="footer-icp"
+          href={SITE.footer.icp.href}
+          target="_blank"
+          rel="noopener noreferrer"
+        >{SITE.footer.icp.label}</a>
+      )}
+    </div>
   </div>
 </footer>
 
