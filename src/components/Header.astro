@@ -36,20 +36,21 @@ function isActive(href: string) {
         <path d="M4 11a9 9 0 0 1 9 9h-3a6 6 0 0 0-6-6v-3zm0-7a16 16 0 0 1 16 16h-3A13 13 0 0 0 4 7V4zm1.75 12.5a2.25 2.25 0 1 1 0 4.5 2.25 2.25 0 0 1 0-4.5z"/>
       </svg>
     </a>
-    <button
-      class="header-icon menu-toggle"
-      type="button"
-      aria-label="Open navigation"
-      aria-expanded="false"
-      aria-controls="site-menu"
-      data-menu-toggle
-    >
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
   </div>
 </header>
+
+<button
+  class="header-icon menu-toggle"
+  type="button"
+  aria-label="Open navigation"
+  aria-expanded="false"
+  aria-controls="site-menu"
+  data-menu-toggle
+>
+  <span></span>
+  <span></span>
+  <span></span>
+</button>
 
 <button
   class="menu-scrim"
@@ -101,6 +102,7 @@ function isActive(href: string) {
       scrim.tabIndex = open ? 0 : -1
       panel.classList.toggle('open', open)
       panel.setAttribute('aria-hidden', String(!open))
+      document.body.classList.toggle('menu-open', open)
       if (open) {
         prevOverflow = document.body.style.overflow
         document.body.style.overflow = 'hidden'

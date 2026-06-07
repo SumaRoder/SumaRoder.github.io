@@ -255,6 +255,12 @@ img {
   background: var(--header-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  transition: transform 0.46s cubic-bezier(0.7, 0, 0.3, 1);
+  will-change: transform;
+}
+
+body.menu-open .site-header {
+  transform: translateY(-110%);
 }
 
 .brand-mark {
@@ -341,8 +347,15 @@ img {
 }
 
 .menu-toggle {
+  position: fixed;
+  top: 13px;
+  right: 12px;
+  z-index: 22;
   gap: 4px;
   padding: 0;
+  background: var(--header-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .menu-toggle span {
@@ -2074,6 +2087,11 @@ img {
     padding-right: 10px;
   }
 
+  .menu-toggle {
+    top: 10px;
+    right: 10px;
+  }
+
   .site-menu {
     width: min(86vw, 360px);
     padding-left: 18px;
@@ -2187,6 +2205,11 @@ img {
   .header-icon {
     width: 40px;
     height: 40px;
+  }
+
+  .menu-toggle {
+    top: 10px;
+    right: 8px;
   }
 
   .hero-panel,

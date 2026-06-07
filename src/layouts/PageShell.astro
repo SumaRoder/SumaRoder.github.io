@@ -25,14 +25,14 @@ const siteOrigin = Astro.site ?? new URL('https://example.com')
 const canonical = new URL(Astro.url.pathname, siteOrigin).href
 const ogImage = image
   ? new URL(image.startsWith('http') ? image : `${base}${image.startsWith('/') ? '' : '/'}${image}`, siteOrigin).href
-  : new URL(`${base}/favicon.svg`, siteOrigin).href
+  : new URL(`${base}/favicon.png`, siteOrigin).href
 const rssHref = `${base}/rss.xml`
 ---
 <!DOCTYPE html>
 <html lang={SITE.lang}>
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href={url('/favicon.svg')} />
+    <link rel="icon" type="image/svg+xml" href={url('/favicon.png')} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={pageDescription} />
